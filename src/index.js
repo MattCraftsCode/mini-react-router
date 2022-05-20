@@ -12,12 +12,19 @@ import Home from "./components/Home";
 import User from "./components/User";
 import Profile from "./components/Profile";
 import Login from "./components/Login";
+import NavHeader from "./components/NavHeader";
 import NavLink from "./react-router-dom/NavLink";
 import NavLinkRoute from "./react-router-dom/NavLinkRoute";
 
 ReactDOM.render(
   <div>
-    <Router>
+    <Router
+      getUserConfirmation={() => {
+        console.log("getUserConfirmation 自定义路由跳转确认弹窗");
+        return window.confirm;
+      }}
+    >
+      <NavHeader></NavHeader>
       <h2>NavLink</h2>
       <ul>
         <li>

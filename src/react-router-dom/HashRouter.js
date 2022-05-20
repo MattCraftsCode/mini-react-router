@@ -9,7 +9,7 @@ class HashRouter extends React.Component {
     super(props);
 
     // 暂时用官方的 createHashHistory
-    this.history = createHashHistory();
+    this.history = createHashHistory(props);
   }
 
   // 此处写，和构造方法 this.xx 一样

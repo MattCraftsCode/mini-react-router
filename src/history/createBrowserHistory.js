@@ -1,6 +1,10 @@
-function createBrowserHistory() {
+function createBrowserHistory(props) {
   const nativeHistory = window.history;
   let listeners = [];
+  let currentMessge; // 定义当前阻止跳转的消息函数
+  let userConfirm = props.getUserConfirmation
+    ? props.getUserConfirmation()
+    : window.confirm; // 用户自定义弹窗
 
   // 跳转到 n，指针移动，触发 onPopState
   function go(n) {
@@ -48,9 +52,27 @@ function createBrowserHistory() {
       pathname = to;
       state = nextState;
     }
+
+    // 是否需要阻止跳转
+    if (currentMessge) {
+      const message = currentMessge({ pathname });
+      const allow = userConfirm(message);
+
+      if (!allow) {
+        return;
+      }
+    }
+
     nativeHistory.pushState(state, null, pathname);
     let location = { state, pathname };
     setState({ action, location });
+  }
+
+  function block(newMessage) {
+    currentMessge = newMessage;
+    return () => {
+      currentMessge = null;
+    };
   }
 
   const history = {
@@ -65,6 +87,7 @@ function createBrowserHistory() {
       pathname: window.location.pathname,
       state: nativeHistory.state,
     },
+    block,
   };
 
   return history;

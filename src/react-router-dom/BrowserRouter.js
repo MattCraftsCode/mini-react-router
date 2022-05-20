@@ -9,7 +9,7 @@ class BrowserRouter extends React.Component {
     super(props);
 
     // 暂时用官方的 createBrowserHistory
-    this.history = createBrowserHistory();
+    this.history = createBrowserHistory(props);
   }
 
   // 此处写，和构造方法 this.xx 一样

@@ -1,9 +1,13 @@
-function createHashHistory() {
+function createHashHistory(props) {
   let stack = []; // 模拟一个历史条目栈，放的都是 location
   let index = -1; // 模拟一个当前索引
   let action = "POP"; // 默认动作
   let state; // 当前状态
   let listeners = []; // 监听函数的数组
+  let currentMessge; // 定义当前阻止跳转的消息函数
+  let userConfirm = props.getUserConfirmation
+    ? props.getUserConfirmation()
+    : window.confirm; // 用户自定义弹窗
 
   // 跳转到 n，指针移动，触发 onPopState
   // go 是在历史条目中跳转，条目数不会发生改变
@@ -57,8 +61,26 @@ function createHashHistory() {
       pathname = to;
       state = nextState;
     }
+
+    // 是否需要阻止跳转
+    if (currentMessge) {
+      const message = currentMessge({ pathname });
+      const allow = userConfirm(message);
+
+      if (!allow) {
+        return;
+      }
+    }
+
     // 触发 hashchange 事件
     window.location.hash = pathname;
+  }
+
+  function block(newMessage) {
+    currentMessge = newMessage;
+    return () => {
+      currentMessge = null;
+    };
   }
 
   function listen(listener) {
@@ -80,6 +102,7 @@ function createHashHistory() {
       pathname: window.location.hash.slice(1),
       state: undefined,
     },
+    block,
   };
 
   // 不够优雅
