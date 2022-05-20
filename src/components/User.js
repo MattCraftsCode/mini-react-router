@@ -1,44 +1,56 @@
-import React from "react";
+import React, { useRef } from "react";
 import Link from "../react-router-dom/Link";
 import Route from "../react-router/Route";
+import { UserAPI } from "../utils";
 
 function UserList() {
+  const users = UserAPI.list();
   return (
     <div>
       <ul>
-        <li>小明</li>
-        <li>小王</li>
-        <li>小李</li>
+        {users.map((user) => (
+          <li key={user.id}>
+            <Link to={`/user/detail/${user.id}`}>
+              {user.id} - {user.name}
+            </Link>
+          </li>
+        ))}
       </ul>
     </div>
   );
 }
 
-function UserAdd() {
-  return <div>UserAdd</div>;
+function UserAdd(props) {
+  const userRef = useRef();
+
+  const submit = () => {
+    UserAPI.add({
+      id: Date.now(),
+      name: userRef.current.value,
+    });
+
+    props.history.push("/user/list");
+  };
+
+  return (
+    <div>
+      <input type="text" ref={userRef} />
+      <button onClick={submit}>添加</button>
+    </div>
+  );
 }
 
 function UserDetail(props) {
   // 获取 state 数据
-  console.log(props.location.state);
-  const user = props.location?.state || {};
-  return (
-    <div>
-      <ul>
-        <li>
-          <Link to={{ pathname: "/user/detail/1", state: { id: 1 } }}>
-            小明 id = 1
-          </Link>
-        </li>
-        <li>
-          <Link to={{ pathname: "/user/detail/2", state: { id: 2 } }}>
-            小王 id = 2
-          </Link>
-        </li>
-        <div>{user.id}</div>
-      </ul>
-    </div>
-  );
+  // console.log(props.location.state);
+  // console.log(props.match.params);
+  // const user = props.location?.state || {};
+
+  const id = props.match?.params?.id ? parseInt(props.match?.params?.id) : 0;
+
+  const user = UserAPI.find(id);
+
+  return <div>用户详情: {user.name}</div>;
 }
 
 class User extends React.Component {
@@ -52,14 +64,11 @@ class User extends React.Component {
           <li>
             <Link to="/user/add">用户添加</Link>
           </li>
-          <li>
-            <Link to="/user/detail">用户详情</Link>
-          </li>
         </ul>
         <div>
           <Route path="/user/list" component={UserList} exact></Route>
           <Route path="/user/add" component={UserAdd}></Route>
-          <Route path="/user/detail" component={UserDetail}></Route>
+          <Route path="/user/detail/:id" component={UserDetail}></Route>
         </div>
       </div>
     );

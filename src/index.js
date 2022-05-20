@@ -17,7 +17,9 @@ ReactDOM.render(
     <Router>
       <ul>
         <li>
-          <Link to="/">首页</Link>
+          <Link to="/" style={{ color: "red", fontWeight: "bold" }}>
+            首页
+          </Link>
         </li>
         <li>
           <Link to="/user">用户</Link>
