@@ -1,61 +1,81 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { HashRouter as Router } from "react-router-dom";
+import { Route, Link } from "react-router-dom";
+import { Switch } from "react-router-dom";
 
-import { HashRouter as Router, Route } from "./react-router-dom";
+// 自己实现 Lazy 方法
+function lazy(load) {
+  return class extends React.Component {
+    // 实际加载的组件，默认不存在
+    state = { trueComponent: null };
 
-// 组件
-import Switch from "./react-router/Switch";
-import Link from "./react-router-dom/Link";
+    componentDidMount() {
+      load().then((result) => {
+        this.setState({ trueComponent: result.default || result });
+      });
+    }
+    render() {
+      const { trueComponent: LoadComponent } = this.state;
+      return LoadComponent ? <LoadComponent {...this.props} /> : null;
+    }
+  };
+}
 
-// 页面
-import Home from "./components/Home";
-import User from "./components/User";
-import Profile from "./components/Profile";
-import Login from "./components/Login";
-import NavHeader from "./components/NavHeader";
-import NavLink from "./react-router-dom/NavLink";
-import NavLinkRoute from "./react-router-dom/NavLinkRoute";
+// 使用 React 官方 lazy
+if (false) {
+  const LazyHome = React.lazy(() =>
+    import(/* webpackChunkName: "home" */ "./components/lazy/LazyHome")
+  );
+  const LazyProfile = React.lazy(() =>
+    import(/* webpackChunkName: "profile" */ "./components/lazy/LazyProfile")
+  );
+}
 
-ReactDOM.render(
-  <div>
-    <Router
-      getUserConfirmation={() => {
-        console.log("getUserConfirmation 自定义路由跳转确认弹窗");
-        return window.confirm;
-      }}
-    >
-      <NavHeader></NavHeader>
-      <h2>NavLink</h2>
-      <ul>
-        <li>
-          <NavLink to="/home">首页</NavLink>
-        </li>
-        <li>
-          <NavLink to="/user">用户</NavLink>
-        </li>
-        <li>
-          <Link to="/profile">详情</Link>
-        </li>
-      </ul>
-      <h2>NavLinkRoute</h2>
-      <ul>
-        <li>
-          <NavLinkRoute to="/home">首页</NavLinkRoute>
-        </li>
-        <li>
-          <NavLinkRoute to="/user">用户</NavLinkRoute>
-        </li>
-        <li>
-          <Link to="/profile">详情</Link>
-        </li>
-      </ul>
-      <Switch>
-        <Route path="/home" component={Home} exact></Route>
-        <Route path="/user" component={User}></Route>
-        <Route path="/login" component={Login}></Route>
-        <Route path="/profile" component={Profile}></Route>
-      </Switch>
-    </Router>
-  </div>,
-  document.getElementById("root")
+const LazyHome = lazy(() =>
+  import(/* webpackChunkName: "home" */ "./components/lazy/LazyHome")
 );
+const LazyProfile = lazy(() =>
+  import(/* webpackChunkName: "profile" */ "./components/lazy/LazyProfile")
+);
+
+function SuspenseHome() {
+  return (
+    <React.Suspense fallback={<div>loading</div>}>
+      <LazyHome></LazyHome>
+    </React.Suspense>
+  );
+}
+
+function SuspenseProfile() {
+  return (
+    <React.Suspense fallback={<div>loading</div>}>
+      <LazyProfile></LazyProfile>
+    </React.Suspense>
+  );
+}
+
+class App extends React.Component {
+  render() {
+    return (
+      <Router>
+        <div>
+          <ul>
+            <li>
+              <Link to="/">首页</Link>
+            </li>
+            <li>
+              <Link to="/profile">个人</Link>
+            </li>
+          </ul>
+          <Switch>
+            <Route path="/" component={SuspenseHome} exact />
+            <Route path="/profile" component={SuspenseProfile} />
+          </Switch>
+        </div>
+      </Router>
+    );
+  }
+}
+
+ReactDOM.render(<App />, document.getElementById("root"));
