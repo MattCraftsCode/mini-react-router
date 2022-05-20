@@ -35,7 +35,7 @@ function UserAdd(props) {
 
   const logout = () => {
     localStorage.setItem("isLogin", "");
-    props.history.push("/login");
+    props.history.push({ pathname: "/login", state: { from: "/user/add" } });
   };
 
   return (
@@ -73,7 +73,16 @@ class User extends React.Component {
           </li>
         </ul>
         <div>
-          <Route path="/user/list" component={UserList} exact></Route>
+          <Protected
+            path="/user/list"
+            component={UserList}
+            fall="/login"
+            auth={() => {
+              const isLogin = localStorage.getItem("isLogin");
+              return !!isLogin;
+            }}
+            exact
+          ></Protected>
           <Protected
             path="/user/add"
             component={UserAdd}
