@@ -29,6 +29,7 @@ class Router extends React.Component {
       history: this.props.history,
       match: Router.computeRootMatch(this.state.location.pathname),
     };
+    debugger;
 
     return (
       <RouterContext.Provider value={value}>
