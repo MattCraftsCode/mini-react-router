@@ -10,7 +10,12 @@ class Route extends React.Component {
     const { history, location } = this.context;
 
     // const { path, component: RouteComponent } = this.props;
-    const { component: RouteComponent, computedMatch, render } = this.props;
+    const {
+      component: RouteComponent,
+      computedMatch,
+      render,
+      children,
+    } = this.props;
     let match = computedMatch
       ? computedMatch
       : matchPath(location.pathname, this.props);
@@ -33,6 +38,15 @@ class Route extends React.Component {
         renderElement = <RouteComponent {...routerProps}></RouteComponent>;
       } else if (render) {
         renderElement = render(routerProps);
+      } else if (children) {
+        renderElement = children(routerProps);
+      } else {
+        renderElement = null;
+      }
+    } else {
+      // 匹配不到的时候，也应该显示 children() 方便 NavLinkRoute 调用
+      if (children) {
+        renderElement = children(routerProps);
       } else {
         renderElement = null;
       }
