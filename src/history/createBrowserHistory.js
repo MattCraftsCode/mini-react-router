@@ -1,6 +1,6 @@
 function createBrowserHistory() {
   const nativeHistory = window.history;
-  const listeners = [];
+  let listeners = [];
 
   // 跳转到 n，指针移动，触发 onPopState
   function go(n) {

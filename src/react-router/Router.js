@@ -15,7 +15,6 @@ class Router extends React.Component {
     // 监听路径变化，执行回调，并传入最新路径
     this.unlisten = props.history.listen((location) => {
       // 一旦状态改变，会引起组件刷新
-      console.log(location);
       this.setState({ location });
     });
   }
