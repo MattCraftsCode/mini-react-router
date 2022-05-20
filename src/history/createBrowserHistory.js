@@ -35,11 +35,21 @@ function createBrowserHistory() {
    * @param {*} pathname 跳转路径
    * @param {*} state 跳转的状态
    */
-  function push(path, state) {
+  function push(to, nextState) {
     // 对标 nativeHistory.pushState 方法
     const action = "PUSH";
-    nativeHistory.pushState(state, null, path);
-    let location = { state, pathname: path };
+    let pathname;
+    let state;
+    // 兼容路由的 to 传递的是一个对象 {pathname, state}
+    if (typeof to === "object") {
+      state = to.state;
+      pathname = to.pathname;
+    } else {
+      pathname = to;
+      state = nextState;
+    }
+    nativeHistory.pushState(state, null, pathname);
+    let location = { state, pathname };
     setState({ action, location });
   }
 

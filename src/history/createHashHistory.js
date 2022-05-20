@@ -45,11 +45,20 @@ function createHashHistory() {
   };
   window.addEventListener("hashchange", listener);
 
-  function push(path, nextState) {
+  function push(to, nextState) {
     action = "PUSH";
-    state = nextState;
+    let pathname;
+
+    // 兼容 to 是一个对象的情况 to => { pathname, state }
+    if (typeof to === "object") {
+      state = to.state;
+      pathname = to.pathname;
+    } else {
+      pathname = to;
+      state = nextState;
+    }
     // 触发 hashchange 事件
-    window.location.hash = path;
+    window.location.hash = pathname;
   }
 
   function listen(listener) {
