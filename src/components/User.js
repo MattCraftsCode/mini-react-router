@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import Link from "../react-router-dom/Link";
 import Route from "../react-router/Route";
+import Protected from "../react-router/Protected";
 import { UserAPI } from "../utils";
 
 function UserList() {
@@ -32,10 +33,16 @@ function UserAdd(props) {
     props.history.push("/user/list");
   };
 
+  const logout = () => {
+    localStorage.setItem("isLogin", "");
+    props.history.push("/login");
+  };
+
   return (
     <div>
       <input type="text" ref={userRef} />
       <button onClick={submit}>添加</button>
+      <button onClick={logout}>退出</button>
     </div>
   );
 }
@@ -67,7 +74,15 @@ class User extends React.Component {
         </ul>
         <div>
           <Route path="/user/list" component={UserList} exact></Route>
-          <Route path="/user/add" component={UserAdd}></Route>
+          <Protected
+            path="/user/add"
+            component={UserAdd}
+            fall="/login"
+            auth={() => {
+              const isLogin = localStorage.getItem("isLogin");
+              return !!isLogin;
+            }}
+          ></Protected>
           <Route path="/user/detail/:id" component={UserDetail}></Route>
         </div>
       </div>

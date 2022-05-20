@@ -10,7 +10,7 @@ class Route extends React.Component {
     const { history, location } = this.context;
 
     // const { path, component: RouteComponent } = this.props;
-    const { component: RouteComponent, computedMatch } = this.props;
+    const { component: RouteComponent, computedMatch, render } = this.props;
     let match = computedMatch
       ? computedMatch
       : matchPath(location.pathname, this.props);
@@ -27,7 +27,15 @@ class Route extends React.Component {
 
     if (match) {
       routerProps.match = match;
-      renderElement = <RouteComponent {...routerProps}></RouteComponent>;
+
+      // 渲染组件: component > render
+      if (RouteComponent) {
+        renderElement = <RouteComponent {...routerProps}></RouteComponent>;
+      } else if (render) {
+        renderElement = render(routerProps);
+      } else {
+        renderElement = null;
+      }
     }
     return renderElement;
   }

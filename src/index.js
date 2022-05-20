@@ -11,6 +11,7 @@ import Link from "./react-router-dom/Link";
 import Home from "./components/Home";
 import User from "./components/User";
 import Profile from "./components/Profile";
+import Login from "./components/Login";
 
 ReactDOM.render(
   <div>
@@ -31,6 +32,7 @@ ReactDOM.render(
       <Switch>
         <Route path="/" component={Home} exact></Route>
         <Route path="/user" component={User}></Route>
+        <Route path="/login" component={Login}></Route>
         <Route path="/profile" component={Profile}></Route>
       </Switch>
     </Router>
