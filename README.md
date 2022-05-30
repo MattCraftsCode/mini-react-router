@@ -2,6 +2,11 @@
 
 实现核心的 React-Router 模型，用于深入学习 React-Router， 让你更轻松的理解路由的核心逻辑
 
+其他仓库
+
+- [mini-react](https://github.com/heshiweij/mini-react)
+- [mini-redux](https://github.com/heshiweij/mini-redux)
+
 ## Usage
 
 install
